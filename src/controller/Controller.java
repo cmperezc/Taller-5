@@ -1,5 +1,6 @@
 package controller;
 
+import java.text.ParseException;
 import java.util.Scanner;
 
 import model.logic.Modelo;
@@ -27,72 +28,57 @@ public class Controller {
 	{
 		Scanner lector = new Scanner(System.in);
 		boolean fin = false;
-		String dato = "";
-		String respuesta = "";
+		Integer dato = 0;
+		Integer respuesta = 0;
 
 		while( !fin ){
 			view.printMenu();
 
 			int option = lector.nextInt();
+			Scanner entradaEscaner = new Scanner (System.in);
 			switch(option){
+			
+			
 				case 1:
-					view.printMessage("--------- \nCrear Arreglo \nDar capacidad inicial del arreglo: ");
-				    int capacidad = lector.nextInt();
-				    modelo = new Modelo(capacidad); 
-				    view.printMessage("Arreglo Dinamico creado");
-				    view.printMessage("Numero actual de elementos " + modelo.darTamano() + "\n---------");						
+					try{
+					view.printMessage("---------\nCargando...");
+					long startTime =System.currentTimeMillis();
+					modelo.cargaDatos();
+					long endTime =System.currentTimeMillis();
+					long delta = endTime-startTime;
+					view.printMessage("---------\nArchivo Cargado tiempo de carga: " + delta + " milisegundo");
 					break;
-
-				case 2:
-					view.printMessage("--------- \nDar cadena (simple) a ingresar: ");
-					dato = lector.next();
-					modelo.agregar(dato);
-					view.printMessage("Dato agregado");
-					view.printMessage("Numero actual de elementos " + modelo.darTamano() + "\n---------");						
-					break;
-
-				case 3:
-					view.printMessage("--------- \nDar cadena (simple) a buscar: ");
-					dato = lector.next();
-					respuesta = modelo.buscar(dato);
-					if ( respuesta != null)
-					{
-						view.printMessage("Dato encontrado: "+ respuesta);
+					}catch(Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else
-					{
-						view.printMessage("Dato NO encontrado");
-					}
-					view.printMessage("Numero actual de elementos " + modelo.darTamano() + "\n---------");						
-					break;
-
-				case 4:
-					view.printMessage("--------- \nDar cadena (simple) a eliminar: ");
-					dato = lector.next();
-					respuesta = modelo.eliminar(dato);
-					if ( respuesta != null)
-					{
-						view.printMessage("Dato eliminado "+ respuesta);
-					}
-					else
-					{
-						view.printMessage("Dato NO eliminado");							
-					}
-					view.printMessage("Numero actual de elementos " + modelo.darTamano() + "\n---------");						
-					break;
-
-				case 5: 
-					view.printMessage("--------- \nContenido del Arreglo: ");
-					view.printModelo(modelo);
-					view.printMessage("Numero actual de elementos " + modelo.darTamano() + "\n---------");						
-					break;	
 					
-				case 6: 
-					view.printMessage("--------- \n Hasta pronto !! \n---------"); 
-					lector.close();
-					fin = true;
-					break;	
-
+				case 2: 
+					try{
+						view.printMessage("diga nombre de la compañia"); 
+						String nombreCompa=entradaEscaner.nextLine();
+						modelo.requerimiento1(nombreCompa);;
+						break;
+						}catch(Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
+				case 3: 
+					try{
+						view.printMessage("diga nombre de director"); 
+						String nombreDirector=entradaEscaner.nextLine();
+						modelo.requerimiento2(nombreDirector);;;
+						break;
+						}catch(Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}	
+				
+				case 7: 
+					fin=true;
+					break;
+				
 				default: 
 					view.printMessage("--------- \n Opcion Invalida !! \n---------");
 					break;
