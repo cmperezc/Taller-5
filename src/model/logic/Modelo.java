@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import model.data_structures.ArregloDinamico;
 import model.data_structures.IArregloDinamico;
+import model.data_structures.LinearProbingHashST;
+import model.data_structures.SeparateChainingHashST;
+import model.data_structures.listaDoble;
 
 /**
  * Definicion del modelo del mundo
@@ -19,9 +22,14 @@ public class Modelo {
 
 	private IArregloDinamico <Integer> datos;
 
-	public static String ARCHIVO_CASTING = "/Users/carpe/Downloads/Copia de T0_202020/data/MoviesCastingRaw-small.csv";
+	public static String ARCHIVO_CASTING = "./data/AllMoviesCastingRaw.csv";
 
-	public static String ARCHIVO_DETAILS = "/Users/carpe/Downloads/Copia de T0_202020/data/SmallMoviesDetailsCleaned_2.csv";
+	public static String ARCHIVO_DETAILS = "./data/AllMoviesDetailsCleaned.csv";
+	private SeparateChainingHashST<Integer, Movie> tablaSt;
+	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear;
+	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear2;
+	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear3;
+
 
 	private Catalog catalogo;
 	private Catalog catalogo2;
@@ -34,6 +42,7 @@ public class Modelo {
 		datos = new ArregloDinamico <Integer> (7);
 		catalogo = new Catalog();
 		catalogo2 = new Catalog();
+
 	}
 
 	/**
@@ -86,6 +95,13 @@ public class Modelo {
 
 	public void cargaDatos() {
 
+		tablaSt = new SeparateChainingHashST<Integer, Movie>(1);
+		tablaLinear = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
+		tablaLinear2 = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
+		tablaLinear3 = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
+
+
+
 		Integer idPeliculaAct = -1; 
 
 		File archivo1 = new File (ARCHIVO_DETAILS);
@@ -93,7 +109,7 @@ public class Modelo {
 
 		FileReader fr1 = null;
 		FileReader fr2 = null;
-
+		int lineas = 0;
 
 
 		try {
@@ -105,7 +121,7 @@ public class Modelo {
 			BufferedReader br2 = new BufferedReader (fr2);
 
 			String lineaActual = br1.readLine();
-
+			
 			while ((lineaActual=br1.readLine())!=null) {
 
 				String[] atributos = lineaActual.split(";") ;
@@ -128,8 +144,8 @@ public class Modelo {
 				peliculaAct.setProductionCompany(atributos[8]);
 				peliculaAct.setProductionCountry(atributos[9]);
 				peliculaAct.setReleaseDate(atributos[10]);
-				peliculaAct.setRevenue(Integer.parseInt(atributos[11]));
-				peliculaAct.setRunTime(Integer.parseInt(atributos[12]));
+				peliculaAct.setRevenue(Long.parseLong(atributos[11]));
+				peliculaAct.setRunTime(atributos[12]);
 				peliculaAct.setSpokenLanguage(atributos[13]);
 				peliculaAct.setStatus(atributos[14]);
 				peliculaAct.setTagLine(atributos[15]);
@@ -138,53 +154,80 @@ public class Modelo {
 				peliculaAct.setProductionCompanies(Integer.parseInt(atributos[18]));
 				peliculaAct.setProductionCountries(Integer.parseInt(atributos[19]));
 				peliculaAct.setSpokenLanguages(Integer.parseInt(atributos[20]));
-
-				catalogo.peliculas.agregar(peliculaAct);
+				// catalogo.peliculas.agregar(peliculaAct);
+				// Agregar a la tabla de hash
+				tablaSt.put(idPeliculaAct, peliculaAct);
+				lineas++;
 			}
 
 			lineaActual = br2.readLine();
-			ArregloDinamico<Movie> peliculasCatalogo = catalogo.peliculas;
+			//ArregloDinamico<Movie> peliculasCatalogo = catalogo.peliculas;
 
 			while ((lineaActual=br2.readLine())!=null) {
 
 				String[] atributos = lineaActual.split(";") ;
-				for (int i = 0; i < peliculasCatalogo.darTamano(); i++) {
-					Movie peliculaAct = peliculasCatalogo.darElemento(i);
-					if (peliculaAct.getId()==Integer.parseInt(atributos[0])) {
+				// Obtener la pelicula por id de la tabla de hash
+				Movie peliculaAct = tablaSt.get(Integer.parseInt(atributos[0]));
 
-						ArregloDinamico<Actor> actores = peliculaAct.getActores();
+				ArregloDinamico<Actor> actores = peliculaAct.getActores();
 
-						for (int j = 1 ; j < 11; j++) {
-							Actor actorAct = new Actor(atributos [j],Integer.parseInt(atributos [j+1])); 
-							j++;
-							actores.agregar(actorAct);
-						}
-						peliculaAct.setActores(actores);
-
-						peliculaAct.setNumberActors(Integer.parseInt(atributos[11]));
-						Director director = new Director (atributos[12],Integer.parseInt(atributos [13])) ;
-
-						peliculaAct.setDirectores(director);
-						peliculaAct.setNumberDirectors(Integer.parseInt(atributos[14]));
-
-						Producer productor = new Producer (atributos [15]);
-						peliculaAct.setProductor(productor);
-
-						peliculaAct.setNumberProducers(Integer.parseInt(atributos [16]));
-
-						ScreenPlay screenplay = new ScreenPlay (atributos[17]);
-						peliculaAct.setScreenplay(screenplay);
-
-						Editor editor= new Editor (atributos[18]);
-						peliculaAct.setEditor(editor);
-
-					}
-
+				for (int j = 1 ; j < 11; j++) {
+					Actor actorAct = new Actor(atributos [j],Integer.parseInt(atributos [j+1])); 
+					j++;
+					actores.agregar(actorAct);
 				}
+				peliculaAct.setActores(actores);
+
+				peliculaAct.setNumberActors(Integer.parseInt(atributos[11]));
+				Director director = new Director (atributos[12],Integer.parseInt(atributos [13])) ;
+
+				peliculaAct.setDirectores(director);
+				peliculaAct.setNumberDirectors(Integer.parseInt(atributos[14]));
+
+				Producer productor = new Producer (atributos [15]);
+				peliculaAct.setProductor(productor);
+
+				peliculaAct.setNumberProducers(Integer.parseInt(atributos [16]));
+
+				ScreenPlay screenplay = new ScreenPlay (atributos[17]);
+				peliculaAct.setScreenplay(screenplay);
+
+				Editor editor= new Editor (atributos[18]);
+				peliculaAct.setEditor(editor);
+
+				// Agregar a la tabla de hash
+				tablaSt.put(Integer.parseInt(atributos[0]), peliculaAct);
+				
+				// Agregar a tabla de hash para RF1
+				listaDoble<Movie> peliculas = tablaLinear.get(peliculaAct.getProductionCompany());
+				if(peliculas == null)
+				{
+					peliculas = new listaDoble<Movie>();
+				}
+				peliculas.agregarfinal(peliculaAct);
+				tablaLinear.put(peliculaAct.getProductionCompany(), peliculas);
+				
+				listaDoble<Movie> peliculas2 = tablaLinear2.get(peliculaAct.getDirectores().getDirectorName());
+				if(peliculas2 == null)
+				{
+					peliculas2 = new listaDoble<Movie>();
+				}
+				peliculas2.agregarfinal(peliculaAct);
+				tablaLinear2.put(peliculaAct.getDirectores().getDirectorName(), peliculas2);
+				
+				listaDoble<Movie> peliculas3 = tablaLinear3.get(peliculaAct.getProductionCountry());
+				if(peliculas3 == null)
+				{
+					peliculas3 = new listaDoble<Movie>();
+				}
+				peliculas3.agregarfinal(peliculaAct);
+				tablaLinear3.put(peliculaAct.getProductionCountry(),peliculas3);
+				
+				
 			}
 
 		}catch (Exception e) {
-			System.out.println("error fatal: en pelicula " + idPeliculaAct + " descripciÃ³n error: " + e.getMessage() );
+			System.out.println("error fatal: en pelicula " + idPeliculaAct + " descripción error: " + e.getMessage() );
 		}
 		finally {
 			try {
@@ -199,7 +242,7 @@ public class Modelo {
 				e2.printStackTrace();
 			}
 		}
-		System.out.println("catalogo tamano:"+catalogo.peliculas.darTamano());
+		System.out.println("catalogo tamano:"+ tablaSt.size() + "-" + lineas);
 	}
 
 	public Catalog getCatalogo() {
@@ -210,97 +253,49 @@ public class Modelo {
 		this.catalogo = catalogo;
 	}
 	
-	public void requerimiento1(String p)
-	{
-		//crear la tabla hash
-		Hash ht = new Hash();
-		Catalog copi=new Catalog();
-		for(int i =0; i<catalogo.peliculas.darTamano(); i++)
-		{
-			copi.peliculas.agregar(catalogo.peliculas.darElemento(i));
-		}
-		for(int j =0; j<copi.peliculas.darTamano(); j++)
-		{
-			Integer x =Integer.valueOf(copi.peliculas.darElemento(j).getProductionCompany());
-			Integer y =ht.peliculas.hash(x);
-			if(ht.peliculas.buscar(y)!=null && ht.peliculas.buscar(y).getProductionCompany().equals(copi.peliculas.darElemento(j).getProductionCompany())){
-				Movie z = ht.peliculas.buscar(y);
-				while(ht.peliculas.buscar(y).darSiguiente()!=null)
-				{
-					z=ht.peliculas.buscar(y).darSiguiente();
-				}
-				z.cambiarSiguiente(copi.peliculas.darElemento(j));
-			}
-			else{
-				ht.peliculas.agregar(y, copi.peliculas.darElemento(j));
+	public String R1(String CompProduccion) {
+		double contador=0;
+		double votos=0;
+		listaDoble<Movie> nueva = tablaLinear.get(CompProduccion);
+		if (nueva!=null) {
+			System.out.println("Lista de peliculas:");
+			for (int i = 0; i < nueva.darTamaño(); i++) {
+				System.out.println(nueva.darElemento(i).getoriginalTitle());
+				contador++;
+				votos+=nueva.darElemento(i).getVoteAverage();
 			}
 		}
-		//requerimiento
-		Integer a = Integer.valueOf(p);
-		Integer k = ht.peliculas.hash(a);
-		int c =0;
-		double prom = 0;
-        while(p!= ht.peliculas.buscar(k).getProductionCompany())
-        {
-        	k++;
-        }
-		Movie b = ht.peliculas.buscar(k);
-		while(b!=null)
-		{
-			c++;
-			prom+=b.getVoteAverage();
-			System.out.println(b.getoriginalTitle());
-			b=b.darSiguiente();
+		double total=votos/contador;
+		return "el numero total de peliculas es:"+contador+" "+ "y el promedio de votos es:"+total;
+	}
+	public String R2(String nombreDirector) {
+		double contador=0;
+		double votos=0;
+		listaDoble<Movie> nueva = tablaLinear2.get(nombreDirector);
+		if (nueva!=null) {
+			System.out.println("Lista de peliculas:");
+			for (int i = 0; i < nueva.darTamaño(); i++) {
+				System.out.println(nueva.darElemento(i).getoriginalTitle());
+				contador++;
+				votos+=nueva.darElemento(i).getVoteAverage();
+			}
 		}
-		System.out.println("la cantidad total de peliculas es:"+c);
-		prom=prom/c;
-		System.out.println("la calificacion promedio de esta empresa es:"+prom);
+		double total=votos/contador;
+		return "el numero total de peliculas es:"+contador+" "+ "y el promedio de votos es:"+total;
 	}
 	
-	public void requerimiento2(String d)
-	{
-		//crear la tabla hash
-		Hash ht = new Hash();
-		Catalog copi=new Catalog();
-		for(int i =0; i<catalogo.peliculas.darTamano(); i++)
-		{
-			copi.peliculas.agregar(catalogo.peliculas.darElemento(i));
-		}
-		for(int j =0; j<copi.peliculas.darTamano(); j++)
-		{
-			Integer x =Integer.valueOf(copi.peliculas.darElemento(j).getDirectores().getDirectorName());
-			Integer y =ht.peliculas.hash(x);
-			if(ht.peliculas.buscar(y)!=null && ht.peliculas.buscar(y).getDirectores().getDirectorName().equals(copi.peliculas.darElemento(j).getDirectores().getDirectorName())){
-				Movie z = ht.peliculas.buscar(y);
-				while(ht.peliculas.buscar(y).darSiguiente()!=null)
-				{
-					z=ht.peliculas.buscar(y).darSiguiente();
-				}
-				z.cambiarSiguiente(copi.peliculas.darElemento(j));
-			}
-			else{
-				ht.peliculas.agregar(y, copi.peliculas.darElemento(j));
+	public String R5(String nombrePais) {
+		double contador=0;
+		double votos=0;
+		listaDoble<Movie> nueva = tablaLinear3.get(nombrePais);
+		if (nueva!=null) {
+			System.out.println("Lista de peliculas:");
+			for (int i = 0; i < nueva.darTamaño(); i++) {
+				System.out.println(nueva.darElemento(i).getoriginalTitle()+""+"anio:"+nueva.darElemento(i).getReleaseDate()+" "+"y el director es:"+" "+nueva.darElemento(i).getDirectores().getDirectorName());
+				
 			}
 		}
-		//requerimiento
-		Integer a = Integer.valueOf(d);
-		Integer k = ht.peliculas.hash(a);
-		int c =0;
-		double prom = 0;
-		while(d!= ht.peliculas.buscar(k).getDirectores().getDirectorName())
-        {
-        	k++;
-        }
-		Movie b = ht.peliculas.buscar(k);
-		while(b!=null)
-		{
-			c++;
-			prom+=b.getVoteAverage();
-			System.out.println(b.getoriginalTitle());
-			b=b.darSiguiente();
-		}
-		System.out.println("la cantidad total de peliculas es:"+c);
-		prom=prom/c;
-		System.out.println("la calificacion promedio de este director es:"+prom);
+		return "fin";
 	}
+
 }

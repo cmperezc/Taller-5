@@ -20,8 +20,8 @@ public class Movie implements Comparable <Movie> {
 	private Editor editor;
 	private ArregloDinamico <String> genre;
 	private String releaseDate;
-	private Integer revenue;
-	private Integer runTime;
+	private Long revenue;
+	private String runTime;
 	private String spokenLanguage;
 	private String status;
 	private String tagLine;
@@ -156,13 +156,13 @@ public class Movie implements Comparable <Movie> {
 
 
 
-	public Integer getRevenue() {
+	public Long getRevenue() {
 		return revenue;
 	}
 
 
 
-	public void setRevenue(Integer revenue) {
+	public void setRevenue(Long revenue) {
 		this.revenue = revenue;
 	}
 
@@ -192,13 +192,13 @@ public class Movie implements Comparable <Movie> {
 
 
 
-	public Integer getRunTime() {
+	public String getRunTime() {
 		return runTime;
 	}
 
 
 
-	public void setRunTime(Integer runTime) {
+	public void setRunTime(String runTime) {
 		this.runTime = runTime;
 	}
 

@@ -57,7 +57,7 @@ public class Controller {
 					try{
 						view.printMessage("diga nombre de la compañia"); 
 						String nombreCompa=entradaEscaner.nextLine();
-						modelo.requerimiento1(nombreCompa);;
+						view.printMessage(modelo.R1(nombreCompa));
 						break;
 						}catch(Exception e) {
 							// TODO Auto-generated catch block
@@ -68,12 +68,23 @@ public class Controller {
 					try{
 						view.printMessage("diga nombre de director"); 
 						String nombreDirector=entradaEscaner.nextLine();
-						modelo.requerimiento2(nombreDirector);;;
+						view.printMessage(modelo.R2(nombreDirector));
 						break;
 						}catch(Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}	
+				case 4: 
+					try{
+						view.printMessage("diga el pais de interes"); 
+						String nombrePais=entradaEscaner.nextLine();
+						view.printMessage(modelo.R5(nombrePais));
+						break;
+						}catch(Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}	
+
 				
 				case 7: 
 					fin=true;
