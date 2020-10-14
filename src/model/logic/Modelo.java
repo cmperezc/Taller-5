@@ -3,9 +3,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import model.data_structures.ArregloDinamico;
+import model.data_structures.BST;
 import model.data_structures.IArregloDinamico;
 import model.data_structures.LinearProbingHashST;
+import model.data_structures.RedBlackBST;
 import model.data_structures.SeparateChainingHashST;
 import model.data_structures.listaDoble;
 
@@ -22,13 +28,14 @@ public class Modelo {
 
 	private IArregloDinamico <Integer> datos;
 
-	public static String ARCHIVO_CASTING = "./data/AllMoviesCastingRaw.csv";
+	public static String ARCHIVO = "./data/us_accidents_small.csv";
 
-	public static String ARCHIVO_DETAILS = "./data/AllMoviesDetailsCleaned.csv";
 	private SeparateChainingHashST<Integer, Movie> tablaSt;
 	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear;
 	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear2;
 	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear3;
+	private RedBlackBST<Date, listaDoble<accidents>> Bst;
+	private BST<Date, BST<Double, listaDoble<accidents>>> bst2;
 
 
 	private Catalog catalogo;
@@ -94,18 +101,24 @@ public class Modelo {
 
 
 	public void cargaDatos() {
+		
+		int contador=0;
 
 		tablaSt = new SeparateChainingHashST<Integer, Movie>(1);
 		tablaLinear = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
 		tablaLinear2 = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
 		tablaLinear3 = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
+		Bst = new RedBlackBST<Date, listaDoble<accidents>>();
+		bst2= new BST<Date, BST<Double, listaDoble<accidents>>>(); 
+		
 
 
 
-		Integer idPeliculaAct = -1; 
+		Integer idPeliculaAct = -1;
+		String id=null;
 
-		File archivo1 = new File (ARCHIVO_DETAILS);
-		File archivo2 = new File (ARCHIVO_CASTING);
+		File archivo1 = new File (ARCHIVO);
+
 
 		FileReader fr1 = null;
 		FileReader fr2 = null;
@@ -115,116 +128,113 @@ public class Modelo {
 		try {
 
 			fr1 = new FileReader (archivo1);
-			fr2 = new FileReader (archivo2);
 
 			BufferedReader br1 = new BufferedReader (fr1);
-			BufferedReader br2 = new BufferedReader (fr2);
+
 
 			String lineaActual = br1.readLine();
 			
 			while ((lineaActual=br1.readLine())!=null) {
-
-				String[] atributos = lineaActual.split(";") ;
-				Movie peliculaAct = new Movie (Integer.parseInt(atributos[0])) ;
-				idPeliculaAct = Integer.parseInt(atributos[0]);
-
-				peliculaAct.setBudget(Double.parseDouble(atributos [1]));
-				String [] generos = atributos[2].split("|");
-
-				ArregloDinamico<String> arregloGeneros = new ArregloDinamico <String>() ;
-				for (int i = 0 ; i< generos.length ; i++ ) {
-					arregloGeneros.agregar(generos [i]);
+				contador++;
+				String[] atributos = lineaActual.split(",") ;
+				accidents accidentes = new accidents(atributos[0]);
+				id=atributos[0];
+				accidentes.setSource(atributos[1]);
+				if(!atributos[2].equals(""))
+					accidentes.setTMC(Double.parseDouble(atributos[2]));
+				if(!atributos[3].equals(""))
+					accidentes.setSeverity(Double.parseDouble(atributos[3]));
+				DateFormat fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				if(!atributos[4].equals(""))
+					accidentes.setStart_Time(fechaHora.parse(atributos[4]));
+				if(!atributos[5].equals(""))
+					accidentes.setEnd_Time(fechaHora.parse(atributos[5]));
+				if(!atributos[6].equals(""))
+					accidentes.setStart_Lat(Double.parseDouble(atributos[6]));
+				if(!atributos[7].equals(""))
+					accidentes.setStart_Lng(Double.parseDouble(atributos[7]));
+				if(!atributos[8].equals(""))
+					accidentes.setEnd_Lat(Double.parseDouble(atributos[8]));
+				if(!atributos[9].equals(""))
+					accidentes.setEnd_Lng(Double.parseDouble(atributos[9]));
+				if(!atributos[10].equals(""))
+					accidentes.setDistance(Double.parseDouble(atributos[10]));
+				accidentes.setDescription(atributos[11]);
+				if(!atributos[12].equals(""))
+					accidentes.setNumber(Double.parseDouble(atributos[12]));
+				accidentes.setStreet(atributos[13]);
+				accidentes.setSide(atributos[14]);
+				accidentes.setCity(atributos[15]);
+				accidentes.setCounty(atributos[16]);
+				accidentes.setState(atributos[17]);
+				accidentes.setZipcode(atributos[18]);
+				accidentes.setCountry(atributos[19]);
+				accidentes.setTimezone(atributos[20]);
+				accidentes.setAirport_Code(atributos[21]);
+				if(!atributos[22].equals(""))
+					accidentes.setWeather_Timestamp(fechaHora.parse(atributos[22]));
+				if(!atributos[23].equals(""))
+					accidentes.setTemperature(Double.parseDouble(atributos[23]));
+				if(!atributos[24].equals(""))
+					accidentes.setWind_Chill(Double.parseDouble(atributos[24]));
+				if(!atributos[25].equals(""))
+					accidentes.setHumidity(Double.parseDouble(atributos[25]));
+				if(!atributos[26].equals(""))
+					accidentes.setPressure(Double.parseDouble(atributos[26]));
+				if(!atributos[27].equals(""))
+					accidentes.setVisibility(Double.parseDouble(atributos[27]));
+				accidentes.setWind_Direction(atributos[28]);
+				if(!atributos[29].equals(""))
+					accidentes.setWind_Speed(Double.parseDouble(atributos[29]));
+				if(!atributos[30].equals(""))
+					accidentes.setPrecipitation(Double.parseDouble(atributos[30]));
+				accidentes.setWeather_Condition(atributos[31]);
+				accidentes.setAmenity(Boolean.parseBoolean(atributos[32]));
+				accidentes.setBump(Boolean.parseBoolean(atributos[33]));
+				accidentes.setCrossing(Boolean.parseBoolean(atributos[34]));
+				accidentes.setGive_Way(Boolean.parseBoolean(atributos[35]));
+				accidentes.setJunction(Boolean.parseBoolean(atributos[36]));
+				accidentes.setNo_Exit(Boolean.parseBoolean(atributos[37]));
+				accidentes.setRailway(Boolean.parseBoolean(atributos[38]));
+				accidentes.setRoundabout(Boolean.parseBoolean(atributos[39]));
+				accidentes.setStation(Boolean.parseBoolean(atributos[40]));
+				accidentes.setStop(Boolean.parseBoolean(atributos[41]));
+				accidentes.setTraffic_Calming(Boolean.parseBoolean(atributos[42]));
+				accidentes.setTraffic_Signal(Boolean.parseBoolean(atributos[43]));
+				accidentes.setTurning_Loop(Boolean.parseBoolean(atributos[44]));
+				if (atributos.length>45) {
+					accidentes.setSunrise_Sunset(atributos[45]);
+					accidentes.setCivil_Twilight(atributos[46]);
+					accidentes.setNautical_Twilight(atributos[47]);
+					accidentes.setAstronomical_Twilight(atributos[48]);
 				}
-				peliculaAct.setGenre(arregloGeneros);
-				peliculaAct.setImbdID(atributos[3]);
-				peliculaAct.setLanguage(atributos[4]);
-				peliculaAct.setoriginalTitle(atributos[5]);
-				peliculaAct.setOverview(atributos[6]);
-				peliculaAct.setPopularity(atributos[7]);
-				peliculaAct.setProductionCompany(atributos[8]);
-				peliculaAct.setProductionCountry(atributos[9]);
-				peliculaAct.setReleaseDate(atributos[10]);
-				peliculaAct.setRevenue(Long.parseLong(atributos[11]));
-				peliculaAct.setRunTime(atributos[12]);
-				peliculaAct.setSpokenLanguage(atributos[13]);
-				peliculaAct.setStatus(atributos[14]);
-				peliculaAct.setTagLine(atributos[15]);
-				peliculaAct.setTitle(atributos[16]);
-				peliculaAct.setVoteAverage(Double.parseDouble(atributos[17]));
-				peliculaAct.setProductionCompanies(Integer.parseInt(atributos[18]));
-				peliculaAct.setProductionCountries(Integer.parseInt(atributos[19]));
-				peliculaAct.setSpokenLanguages(Integer.parseInt(atributos[20]));
-				// catalogo.peliculas.agregar(peliculaAct);
-				// Agregar a la tabla de hash
-				tablaSt.put(idPeliculaAct, peliculaAct);
-				lineas++;
-			}
-
-			lineaActual = br2.readLine();
-			//ArregloDinamico<Movie> peliculasCatalogo = catalogo.peliculas;
-
-			while ((lineaActual=br2.readLine())!=null) {
-
-				String[] atributos = lineaActual.split(";") ;
-				// Obtener la pelicula por id de la tabla de hash
-				Movie peliculaAct = tablaSt.get(Integer.parseInt(atributos[0]));
-
-				ArregloDinamico<Actor> actores = peliculaAct.getActores();
-
-				for (int j = 1 ; j < 11; j++) {
-					Actor actorAct = new Actor(atributos [j],Integer.parseInt(atributos [j+1])); 
-					j++;
-					actores.agregar(actorAct);
-				}
-				peliculaAct.setActores(actores);
-
-				peliculaAct.setNumberActors(Integer.parseInt(atributos[11]));
-				Director director = new Director (atributos[12],Integer.parseInt(atributos [13])) ;
-
-				peliculaAct.setDirectores(director);
-				peliculaAct.setNumberDirectors(Integer.parseInt(atributos[14]));
-
-				Producer productor = new Producer (atributos [15]);
-				peliculaAct.setProductor(productor);
-
-				peliculaAct.setNumberProducers(Integer.parseInt(atributos [16]));
-
-				ScreenPlay screenplay = new ScreenPlay (atributos[17]);
-				peliculaAct.setScreenplay(screenplay);
-
-				Editor editor= new Editor (atributos[18]);
-				peliculaAct.setEditor(editor);
-
-				// Agregar a la tabla de hash
-				tablaSt.put(Integer.parseInt(atributos[0]), peliculaAct);
+				DateFormat fechaHora2 = new SimpleDateFormat("yyyy-MM-dd");
+				//listaDoble<accidents> nuevo = Bst.get(fechaHora2.parse(atributos[4]));
+				BST<Double, listaDoble<accidents>> nuevo = bst2.get(fechaHora2.parse(atributos[4]));
 				
-				// Agregar a tabla de hash para RF1
-				listaDoble<Movie> peliculas = tablaLinear.get(peliculaAct.getProductionCompany());
-				if(peliculas == null)
-				{
-					peliculas = new listaDoble<Movie>();
+				if (nuevo!=null) {
+					listaDoble<accidents> lista = nuevo.get(Double.parseDouble(atributos[3]));
+					if (lista!=null) {
+						lista.agregarInicio(accidentes);
+						
+					}
+					else {
+						lista = new listaDoble<accidents>();
+						lista.agregarInicio(accidentes);
+					}
+					nuevo.put(Double.parseDouble(atributos[3]), lista);
+				}else {
+					nuevo=new BST<Double, listaDoble<accidents>>();
+					listaDoble<accidents> lista2= new listaDoble<accidents>();
+					lista2.agregarInicio(accidentes);
+					nuevo.put(Double.parseDouble(atributos[3]), lista2);
 				}
-				peliculas.agregarfinal(peliculaAct);
-				tablaLinear.put(peliculaAct.getProductionCompany(), peliculas);
-				
-				listaDoble<Movie> peliculas2 = tablaLinear2.get(peliculaAct.getDirectores().getDirectorName());
-				if(peliculas2 == null)
-				{
-					peliculas2 = new listaDoble<Movie>();
-				}
-				peliculas2.agregarfinal(peliculaAct);
-				tablaLinear2.put(peliculaAct.getDirectores().getDirectorName(), peliculas2);
-				
-				listaDoble<Movie> peliculas3 = tablaLinear3.get(peliculaAct.getProductionCountry());
-				if(peliculas3 == null)
-				{
-					peliculas3 = new listaDoble<Movie>();
-				}
-				peliculas3.agregarfinal(peliculaAct);
-				tablaLinear3.put(peliculaAct.getProductionCountry(),peliculas3);
+				//Bst.put(fechaHora2.parse(atributos[4]), nuevo);
+				bst2.put(fechaHora2.parse(atributos[4]), nuevo);
 				
 				
 			}
+
 
 		}catch (Exception e) {
 			System.out.println("error fatal: en pelicula " + idPeliculaAct + " descripción error: " + e.getMessage() );
@@ -242,7 +252,7 @@ public class Modelo {
 				e2.printStackTrace();
 			}
 		}
-		System.out.println("catalogo tamano:"+ tablaSt.size() + "-" + lineas);
+		System.out.println("numero de accidentes:"+contador + "llaves" + bst2.size()+"altura"+bst2.height()+"min:"+bst2.min()+"max:"+bst2.max());
 	}
 
 	public Catalog getCatalogo() {
@@ -253,49 +263,16 @@ public class Modelo {
 		this.catalogo = catalogo;
 	}
 	
-	public String R1(String CompProduccion) {
-		double contador=0;
-		double votos=0;
-		listaDoble<Movie> nueva = tablaLinear.get(CompProduccion);
-		if (nueva!=null) {
-			System.out.println("Lista de peliculas:");
-			for (int i = 0; i < nueva.darTamaño(); i++) {
-				System.out.println(nueva.darElemento(i).getoriginalTitle());
-				contador++;
-				votos+=nueva.darElemento(i).getVoteAverage();
-			}
+	public String R1(Date fecha) {
+		int contador = 0;
+		listaDoble<accidents> nueva =new listaDoble<accidents>();
+		BST<Double, listaDoble<accidents>> respuesta= bst2.get(fecha);
+		for (Double actual : respuesta.keys()) {
+			int totalSever=respuesta.get(actual).darTamaño();
+			System.out.println("sever:"+actual+"cantidad"+totalSever);
+			contador+=totalSever;
 		}
-		double total=votos/contador;
-		return "el numero total de peliculas es:"+contador+" "+ "y el promedio de votos es:"+total;
-	}
-	public String R2(String nombreDirector) {
-		double contador=0;
-		double votos=0;
-		listaDoble<Movie> nueva = tablaLinear2.get(nombreDirector);
-		if (nueva!=null) {
-			System.out.println("Lista de peliculas:");
-			for (int i = 0; i < nueva.darTamaño(); i++) {
-				System.out.println(nueva.darElemento(i).getoriginalTitle());
-				contador++;
-				votos+=nueva.darElemento(i).getVoteAverage();
-			}
-		}
-		double total=votos/contador;
-		return "el numero total de peliculas es:"+contador+" "+ "y el promedio de votos es:"+total;
-	}
-	
-	public String R5(String nombrePais) {
-		double contador=0;
-		double votos=0;
-		listaDoble<Movie> nueva = tablaLinear3.get(nombrePais);
-		if (nueva!=null) {
-			System.out.println("Lista de peliculas:");
-			for (int i = 0; i < nueva.darTamaño(); i++) {
-				System.out.println(nueva.darElemento(i).getoriginalTitle()+""+"anio:"+nueva.darElemento(i).getReleaseDate()+" "+"y el director es:"+" "+nueva.darElemento(i).getDirectores().getDirectorName());
-				
-			}
-		}
-		return "fin";
+		return "el numero de accidentes en la fecha es:"+contador;
 	}
 
 }

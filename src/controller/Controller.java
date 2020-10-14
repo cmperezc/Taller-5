@@ -1,6 +1,9 @@
 package controller;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 import model.logic.Modelo;
@@ -57,33 +60,14 @@ public class Controller {
 					try{
 						view.printMessage("diga nombre de la compañia"); 
 						String nombreCompa=entradaEscaner.nextLine();
-						view.printMessage(modelo.R1(nombreCompa));
+						DateFormat fechaHora2 = new SimpleDateFormat("yyyy-MM-dd");
+						view.printMessage(modelo.R1(fechaHora2.parse(nombreCompa)));
 						break;
 						}catch(Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-					
-				case 3: 
-					try{
-						view.printMessage("diga nombre de director"); 
-						String nombreDirector=entradaEscaner.nextLine();
-						view.printMessage(modelo.R2(nombreDirector));
-						break;
-						}catch(Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}	
-				case 4: 
-					try{
-						view.printMessage("diga el pais de interes"); 
-						String nombrePais=entradaEscaner.nextLine();
-						view.printMessage(modelo.R5(nombrePais));
-						break;
-						}catch(Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}	
+			
 
 				
 				case 7: 

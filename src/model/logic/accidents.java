@@ -3,7 +3,7 @@ package model.logic;
 import java.sql.Time;
 import java.util.Date;
 
-public class accidents {
+public class accidents implements Comparable <accidents> {
 	
 	private	String	ID;
 	private	String	Source;
@@ -27,7 +27,7 @@ public class accidents {
 	private	String	Country;
 	private	String	Timezone;
 	private	String	Airport_Code;
-	private	String	Weather_Timestamp;
+	private	Date	Weather_Timestamp;
 	private	double	Temperature;
 	private	double	Wind_Chill;
 	private	double	Humidity;
@@ -55,65 +55,10 @@ public class accidents {
 	private	String	Nautical_Twilight;
 	private	String	Astronomical_Twilight;
 	
-	public accidents(String iD, String source, double tMC, double severity, Date start_Time, Date end_Time,
-			double start_Lat, double start_Lng, double end_Lat, double end_Lng, double distance, String description,
-			double number, String street, String side, String city, String county, String state, String zipcode,
-			String country, String timezone, String airport_Code, String weather_Timestamp, double temperature,
-			double wind_Chill, double humidity, double pressure, double visibility, String wind_Direction,
-			double wind_Speed, double precipitation, String weather_Condition, Boolean amenity, Boolean bump,
-			Boolean crossing, Boolean give_Way, Boolean junction, Boolean no_Exit, Boolean railway, Boolean roundabout,
-			Boolean station, Boolean stop, Boolean traffic_Calming, Boolean traffic_Signal, Boolean turning_Loop,
-			String sunrise_Sunset, String civil_Twilight, String nautical_Twilight, String astronomical_Twilight) {
+	public accidents(String iD) {
 		super();
 		ID = iD;
-		Source = source;
-		TMC = tMC;
-		Severity = severity;
-		Start_Time = start_Time;
-		End_Time = end_Time;
-		Start_Lat = start_Lat;
-		Start_Lng = start_Lng;
-		End_Lat = end_Lat;
-		End_Lng = end_Lng;
-		Distance = distance;
-		Description = description;
-		Number = number;
-		Street = street;
-		Side = side;
-		City = city;
-		County = county;
-		State = state;
-		Zipcode = zipcode;
-		Country = country;
-		Timezone = timezone;
-		Airport_Code = airport_Code;
-		Weather_Timestamp = weather_Timestamp;
-		Temperature = temperature;
-		Wind_Chill = wind_Chill;
-		Humidity = humidity;
-		Pressure = pressure;
-		Visibility = visibility;
-		Wind_Direction = wind_Direction;
-		Wind_Speed = wind_Speed;
-		Precipitation = precipitation;
-		Weather_Condition = weather_Condition;
-		Amenity = amenity;
-		Bump = bump;
-		Crossing = crossing;
-		Give_Way = give_Way;
-		Junction = junction;
-		No_Exit = no_Exit;
-		Railway = railway;
-		Roundabout = roundabout;
-		Station = station;
-		Stop = stop;
-		Traffic_Calming = traffic_Calming;
-		Traffic_Signal = traffic_Signal;
-		Turning_Loop = turning_Loop;
-		Sunrise_Sunset = sunrise_Sunset;
-		Civil_Twilight = civil_Twilight;
-		Nautical_Twilight = nautical_Twilight;
-		Astronomical_Twilight = astronomical_Twilight;
+		
 	}
 
 	public String getID() {
@@ -292,11 +237,11 @@ public class accidents {
 		Airport_Code = airport_Code;
 	}
 
-	public String getWeather_Timestamp() {
+	public Date getWeather_Timestamp() {
 		return Weather_Timestamp;
 	}
 
-	public void setWeather_Timestamp(String weather_Timestamp) {
+	public void setWeather_Timestamp(Date weather_Timestamp) {
 		Weather_Timestamp = weather_Timestamp;
 	}
 
@@ -506,6 +451,12 @@ public class accidents {
 
 	public void setAstronomical_Twilight(String astronomical_Twilight) {
 		Astronomical_Twilight = astronomical_Twilight;
+	}
+
+	@Override
+	public int compareTo(accidents o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 
