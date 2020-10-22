@@ -61,7 +61,19 @@ public class Controller {
 						view.printMessage("diga nombre de la compañia"); 
 						String nombreCompa=entradaEscaner.nextLine();
 						DateFormat fechaHora2 = new SimpleDateFormat("yyyy-MM-dd");
-						view.printMessage(modelo.R1(fechaHora2.parse(nombreCompa)));
+						view.printMessage(modelo.R1BSt(fechaHora2.parse(nombreCompa)));
+						break;
+						}catch(Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
+				case 3: 
+					try{
+						view.printMessage("diga nombre de la compañia"); 
+						String nombreCompa=entradaEscaner.nextLine();
+						DateFormat fechaHora2 = new SimpleDateFormat("yyyy-MM-dd");
+						view.printMessage(modelo.R1RBS(fechaHora2.parse(nombreCompa)));
 						break;
 						}catch(Exception e) {
 							// TODO Auto-generated catch block

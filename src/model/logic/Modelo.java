@@ -34,7 +34,7 @@ public class Modelo {
 	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear;
 	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear2;
 	private SeparateChainingHashST<String, listaDoble<Movie>> tablaLinear3;
-	private RedBlackBST<Date, listaDoble<accidents>> Bst;
+	private RedBlackBST<Date, RedBlackBST<Double, listaDoble<accidents>>> Bst;
 	private BST<Date, BST<Double, listaDoble<accidents>>> bst2;
 
 
@@ -101,16 +101,16 @@ public class Modelo {
 
 
 	public void cargaDatos() {
-		
+
 		int contador=0;
 
 		tablaSt = new SeparateChainingHashST<Integer, Movie>(1);
 		tablaLinear = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
 		tablaLinear2 = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
 		tablaLinear3 = new SeparateChainingHashST<String, listaDoble<Movie>>(1);
-		Bst = new RedBlackBST<Date, listaDoble<accidents>>();
+		Bst = new RedBlackBST<Date, RedBlackBST<Double, listaDoble<accidents>>>();
 		bst2= new BST<Date, BST<Double, listaDoble<accidents>>>(); 
-		
+
 
 
 
@@ -133,7 +133,7 @@ public class Modelo {
 
 
 			String lineaActual = br1.readLine();
-			
+
 			while ((lineaActual=br1.readLine())!=null) {
 				contador++;
 				String[] atributos = lineaActual.split(",") ;
@@ -209,14 +209,13 @@ public class Modelo {
 					accidentes.setAstronomical_Twilight(atributos[48]);
 				}
 				DateFormat fechaHora2 = new SimpleDateFormat("yyyy-MM-dd");
-				//listaDoble<accidents> nuevo = Bst.get(fechaHora2.parse(atributos[4]));
 				BST<Double, listaDoble<accidents>> nuevo = bst2.get(fechaHora2.parse(atributos[4]));
-				
+
 				if (nuevo!=null) {
 					listaDoble<accidents> lista = nuevo.get(Double.parseDouble(atributos[3]));
 					if (lista!=null) {
 						lista.agregarInicio(accidentes);
-						
+
 					}
 					else {
 						lista = new listaDoble<accidents>();
@@ -229,10 +228,30 @@ public class Modelo {
 					lista2.agregarInicio(accidentes);
 					nuevo.put(Double.parseDouble(atributos[3]), lista2);
 				}
-				//Bst.put(fechaHora2.parse(atributos[4]), nuevo);
 				bst2.put(fechaHora2.parse(atributos[4]), nuevo);
-				
-				
+				/////////////////////
+				RedBlackBST<Double, listaDoble<accidents>> nuevo2 = Bst.get(fechaHora2.parse(atributos[4]));
+
+				if (nuevo2!=null) {
+					listaDoble<accidents> lista2 = nuevo2.get(Double.parseDouble(atributos[3]));
+					if (lista2!=null) {
+						lista2.agregarInicio(accidentes);
+
+					}
+					else {
+						lista2 = new listaDoble<accidents>();
+						lista2.agregarInicio(accidentes);
+					}
+					nuevo2.put(Double.parseDouble(atributos[3]), lista2);
+				}else {
+					nuevo2=new RedBlackBST<Double, listaDoble<accidents>>();
+					listaDoble<accidents> lista2= new listaDoble<accidents>();
+					lista2.agregarInicio(accidentes);
+					nuevo2.put(Double.parseDouble(atributos[3]), lista2);
+				}
+				Bst.put(fechaHora2.parse(atributos[4]), nuevo2);
+
+
 			}
 
 
@@ -252,7 +271,8 @@ public class Modelo {
 				e2.printStackTrace();
 			}
 		}
-		System.out.println("numero de accidentes:"+contador + "llaves" + bst2.size()+"altura"+bst2.height()+"min:"+bst2.min()+"max:"+bst2.max());
+		System.out.println("numero de accidentes:"+contador + "llaves" + bst2.size()+"altura"+bst2.height()+"min:"+bst2.min()+"max:"+bst2.max()+"CON BST");
+		System.out.println("numero de accidentes:"+contador + "llaves" + Bst.size()+"altura"+Bst.height()+"min:"+Bst.min()+"max:"+Bst.max()+"CON RBS");
 	}
 
 	public Catalog getCatalogo() {
@@ -262,11 +282,23 @@ public class Modelo {
 	public void setCatalogo(Catalog catalogo) {
 		this.catalogo = catalogo;
 	}
-	
-	public String R1(Date fecha) {
+
+	public String R1BSt(Date fecha) {
 		int contador = 0;
 		listaDoble<accidents> nueva =new listaDoble<accidents>();
 		BST<Double, listaDoble<accidents>> respuesta= bst2.get(fecha);
+		for (Double actual : respuesta.keys()) {
+			int totalSever=respuesta.get(actual).darTamaño();
+			System.out.println("sever:"+actual+"cantidad"+totalSever);
+			contador+=totalSever;
+		}
+		return "el numero de accidentes en la fecha es:"+contador;
+	}
+	
+	public String R1RBS(Date fecha) {
+		int contador = 0;
+		listaDoble<accidents> nueva =new listaDoble<accidents>();
+		RedBlackBST<Double, listaDoble<accidents>> respuesta= Bst.get(fecha);
 		for (Double actual : respuesta.keys()) {
 			int totalSever=respuesta.get(actual).darTamaño();
 			System.out.println("sever:"+actual+"cantidad"+totalSever);
